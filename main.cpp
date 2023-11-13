@@ -54,7 +54,11 @@ void build(const argparse::ArgumentParser &arg, const Config &config) {
     VcpkgCli vcpkg_cli;
 
     // prepare packages
-    // vcpkg_cli.exec(fmt::format("install {}", pkg));
+    for (const auto &pkg : config.depend_packages) {
+        if (vcpkg_cli.exec(fmt::format("install {} >nul 2>&1", pkg.name)) != 0) { // error occurs when to use log.txt
+            throw std::runtime_error(fmt::format("failed to install package \"{}\"", pkg.name));
+        }
+    }
 
     // create build directory
     if (!std::filesystem::exists(build_directory_name))
@@ -96,7 +100,7 @@ void build(const argparse::ArgumentParser &arg, const Config &config) {
     }
 
     // build
-    cmake_cli.exec(fmt::format(". -DCMAKE_TOOLCHAIN_FILE={}/scripts/buildsystems/vcpkg.cmake >log.txt 2>&1", vcpkg_cli.get_path()));
+    cmake_cli.exec(fmt::format(". -DCMAKE_TOOLCHAIN_FILE={}/scripts/buildsystems/vcpkg.cmake >>log.txt 2>&1", vcpkg_cli.get_path()));
     cmake_cli.exec("--build . >> log.txt 2>&1");
 
     std::cout << "build done" << std::endl;
