@@ -10,9 +10,14 @@ struct Target {
         Executable,
         StaticLib,
         DynamicLib
-    } type;
+    } type = TargetType::Executable;
     std::vector<std::string> src;
     std::vector<std::string> dependLibs;
+};
+
+struct dependPackage {
+    std::string name;
+    bool autolink = true;
 };
 
 namespace YAML {
@@ -74,5 +79,6 @@ struct convert<std::vector<std::string>> {
 struct Config {
     std::string main_target;
     std::vector<Target> targets;
+    std::vector<dependPackage> depend_packages;
     Config();
 };

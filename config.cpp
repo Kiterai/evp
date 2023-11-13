@@ -36,5 +36,22 @@ Config::Config() {
         }
     }
 
+    const auto c_depend_pkgs = config["dependPackages"];
+    if (c_depend_pkgs.IsDefined()) {
+        if (!c_depend_pkgs.IsMap()) {
+            throw std::runtime_error("'dependPackages' must be map");
+        }
+
+        for (const auto &c_depend_pkg : c_depend_pkgs) {
+            depend_packages.push_back({});
+            auto &depend_package = depend_packages.back();
+
+            depend_package.name = c_depend_pkg.first.as<std::string>();
+            if (const auto c_autolink = c_depend_pkg.second["autolink"]; c_autolink.IsDefined()) {
+                depend_package.autolink = c_autolink.as<bool>();
+            }
+        }
+    }
+
     std::cout << "config file loaded" << std::endl;
 }
