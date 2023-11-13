@@ -14,7 +14,7 @@ Config::Config() {
         Target &target = targets.back();
 
         target.name = c_target.first.as<std::string>();
-        if (main_target.empty())
+        if (target.type == Target::TargetType::Executable && main_target.empty())
             main_target = target.name;
 
         if (auto c_type = c_target.second["type"]; c_type.IsDefined())
