@@ -126,7 +126,19 @@ void action_run(const argparse::ArgumentParser &arg) {
 }
 
 void action_add(const argparse::ArgumentParser &arg) {
-    std::cout << "add" << std::endl;
+    auto config = YAML::LoadFile(config_file_name);
+    auto pkg_name = arg.get("name");
+
+    auto depend_packages = config["dependPackages"];
+    if (depend_packages[pkg_name].IsDefined()) {
+        std::cout << "\"" << pkg_name << "\" already registered" << std::endl;
+    } else {
+        depend_packages[pkg_name] = YAML::Node();
+
+        std::ofstream fs(config_file_name, std::ios_base::trunc);
+        fs << config;
+        std::cout << "\"" << pkg_name << "\" successfully registered" << std::endl;
+    }
 }
 
 void action_target_add(const argparse::ArgumentParser &arg) {
@@ -196,6 +208,8 @@ int main(int argc, char **argv) {
 
     argparse::ArgumentParser cmd_add("add");
     cmd_add.add_description("Add package dependency");
+    cmd_add.add_argument("name")
+        .help("Specifie package(port) name");
     program.add_subparser(cmd_add);
 
     argparse::ArgumentParser cmd_target("target");
