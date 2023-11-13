@@ -183,15 +183,15 @@ int main(int argc, char **argv) {
     program.add_subparser(cmd_init);
 
     argparse::ArgumentParser cmd_build("build");
-    cmd_build.add_description("Build current directory project");
+    cmd_build.add_description("Build project");
     program.add_subparser(cmd_build);
 
     argparse::ArgumentParser cmd_run("run");
-    cmd_run.add_description("Run current directory project");
+    cmd_run.add_description("Build project and Run main target");
     program.add_subparser(cmd_run);
 
     argparse::ArgumentParser cmd_add("add");
-    cmd_add.add_description("Add package dependency (default to main target)");
+    cmd_add.add_description("Add package dependency");
     program.add_subparser(cmd_add);
 
     argparse::ArgumentParser cmd_target("target");
