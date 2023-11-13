@@ -156,7 +156,10 @@ void action_target_list(const argparse::ArgumentParser &arg) {
     Config config;
 
     for (const auto &target : config.targets) {
-        std::cout << target.name << " : " << YAML::Node(target.type) << std::endl;
+        std::cout << target.name << " : " << YAML::Node(target.type);
+        if (target.name == config.main_target)
+            std::cout << " (main target)";
+        std::cout << std::endl;
     }
 }
 
