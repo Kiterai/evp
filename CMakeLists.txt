@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 
 project(evp)
 
-add_executable(evp main.cpp)
+add_executable(evp main.cpp config.cpp)
 
 set_target_properties(evp PROPERTIES CXX_STANDARD 20)
 
