@@ -13,27 +13,33 @@ bool is_program_exists(std::string program) {
     return std::system(chk_cmd.c_str()) == 0;
 }
 
+auto get_executable_path(const std::string cmd) {
+    std::string path;
+#ifdef WIN32
+    std::system(fmt::format("where {} >tmp.txt", cmd).c_str());
+    {
+        std::ifstream fs("tmp.txt");
+        std::getline(fs, path);
+    }
+    std::filesystem::remove("tmp.txt");
+#else
+    std::system(fmt::format("which {} >tmp.txt", cmd).c_str());
+    {
+        std::ifstream fs("tmp.txt");
+        std::getline(fs, path);
+    }
+    std::filesystem::remove("tmp.txt");
+#endif
+    return path;
+}
+
 class GitCli {
     std::string git_bin_path;
 
   public:
     GitCli() {
         if (is_program_exists("git")) {
-#ifdef WIN32
-            std::system("where git >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, git_bin_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#else
-            std::system("which git >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, git_bin_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#endif
+            git_bin_path = get_executable_path("git");
             return;
         }
         std::cout << "git not found" << std::endl;
@@ -50,21 +56,7 @@ class CmakeCli {
   public:
     CmakeCli() {
         if (is_program_exists("cmake")) {
-#ifdef WIN32
-            std::system("where cmake >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, cmake_bin_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#else
-            std::system("which cmake >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, cmake_bin_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#endif
+            cmake_bin_path = get_executable_path("cmake");
             return;
         }
         std::cout << "cmake not found" << std::endl;
@@ -85,23 +77,7 @@ class VcpkgCli {
             vcpkg_path = tmp;
         else if (is_program_exists("vcpkg")) {
             std::cout << "VCPKG_ROOT not set" << std::endl;
-#ifdef WIN32
-            std::system("where vcpkg >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, vcpkg_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#else
-            std::system("which vcpkg >tmp.txt");
-            {
-                std::ifstream fs("tmp.txt");
-                std::getline(fs, vcpkg_path);
-            }
-            std::filesystem::remove("tmp.txt");
-#endif
-
-            vcpkg_path = std::filesystem::path(vcpkg_path).parent_path().string();
+            vcpkg_path = std::filesystem::path(get_executable_path("vcpkg")).parent_path().string();
             std::cout << "vcpkg found: " << vcpkg_path << std::endl;
         } else {
             std::cout << "vcpkg not found" << std::endl;
