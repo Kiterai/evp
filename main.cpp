@@ -67,7 +67,19 @@ void build(const argparse::ArgumentParser &arg, const Config &config) {
 
         for (const auto &target : config.targets) {
             // target definition
-            fs << "add_executable(" << target.name << ' ';
+            switch (target.type) {
+            case Target::TargetType::Executable:
+                fs << "add_executable(" << target.name << " ";
+                break;
+            case Target::TargetType::DynamicLib:
+                fs << "add_library(" << target.name << " SHARED ";
+                break;
+            case Target::TargetType::StaticLib:
+                fs << "add_library(" << target.name << " STATIC ";
+                break;
+            default:
+                throw std::runtime_error("Unknown target type");
+            }
             for (const auto &src_file : target.src) {
                 fs << "../src/" << src_file << ' ';
             }
