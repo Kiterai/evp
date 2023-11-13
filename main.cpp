@@ -109,6 +109,10 @@ void action_build(const argparse::ArgumentParser &arg) {
 
 void action_run(const argparse::ArgumentParser &arg) {
     Config config;
+    if (config.main_target.empty()) {
+        throw std::runtime_error("Executable target not appeared");
+    }
+
     build(arg, config);
 
     std::cout << "executing \"" << config.main_target << "\"\n"
